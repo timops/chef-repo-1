@@ -205,7 +205,7 @@ transaction-isolation = <%= node['mysql']['tunable']['transaction-isolation'] %>
 innodb_write_io_threads         = <%= node['mysql']['tunable']['innodb_write_io_threads'] %>
 innodb_io_capacity              = <%= node['mysql']['tunable']['innodb_io_capacity'] %>
 innodb_read_io_threads          = <%= node['mysql']['tunable']['innodb_read_io_threads'] %>
-innodb_buffer_pool_instances    = <%= node['mysql']['tunable']['innodb_buffer_pool_instances'] %>     
+innodb_buffer_pool_instances    = <%= node['mysql']['tunable']['innodb_buffer_pool_instances'] %>
 <%- end %>
 
 ## InnoDB Plugin Independent Settings
@@ -222,6 +222,7 @@ innodb_status_file
 innodb_file_per_table
 <%- end %>
 innodb_table_locks              = <%= node['mysql']['tunable']['innodb_table_locks'] %>
+innodb_rollback_on_timeout      = <%= node['mysql']['tunable']['innodb_rollback_on_timeout'] %>
 innodb_lock_wait_timeout        = <%= node['mysql']['tunable']['innodb_lock_wait_timeout'] %>
 innodb_thread_concurrency       = <%= node['mysql']['tunable']['innodb_thread_concurrency'] %>
 innodb_commit_concurrency       = <%= node['mysql']['tunable']['innodb_commit_concurrency'] %>
