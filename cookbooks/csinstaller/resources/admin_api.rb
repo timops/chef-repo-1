@@ -1,5 +1,5 @@
 actions :request
-attribute :command
+attribute :command, :kind_of => String
 attribute :async, :default => false
 attribute :params
 attribute :admin_api_endpoint, :default => "http://localhost:8096"

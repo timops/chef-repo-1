@@ -20,12 +20,16 @@ module Opscode
           params_arr << elem[0].to_s + '=' + elem[1].to_s
         }
         data = params_arr.join('&')
-        encoded_data = URI.encode(data.downcase).gsub('+', '%2B').gsub(',', '%2c').gsub(' ','%20').gsub('/','%2F')
+        Chef::Log.info("Raw HTTP Request: #{data}")
+        #encoded_data = URI.encode(data.downcase).gsub('+', '%2B').gsub(',', '%2c').gsub(' ','%20').gsub('/','%2F').gsub(':',"%3A")
+        #Chef::Log.info("Encoded HTTP Request: #{encoded_data}")
         url = "#{admin_api_url}?#{data}"
         uri = URI.parse(url)
         http = Net::HTTP.new(uri.host, uri.port)
         request = Net::HTTP::Get.new(uri.request_uri)
+        Chef::Log.info("HTTP Request: #{uri.request_uri}")
         response = http.request(request)
+        Chef::Log.info("HTTP Response: #{response.body}")
 
         if !response.is_a?(Net::HTTPOK) then
           puts "Error #{response.code}: #{response.message}"

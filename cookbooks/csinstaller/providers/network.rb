@@ -21,7 +21,7 @@ action :setup do
   csinstaller_admin_api "Enable physical network" do
     command "updatePhysicalNetwork"
     async true
-    params "state" => "enabled", "id" => phy_network['id']
+    params "state" => "Enabled", "id" => phy_network['id']
   end
 
   ["VirtualRouter", "VpcVirtualRouter" ].each do |nsp_type|
@@ -43,13 +43,13 @@ action :setup do
 
     csinstaller_admin_api "configure virtual router element" do
       command "configureVirtualRouterElement"
-      params "state" => "Enable", "id" => vre['id']
+      params "enabled" => true, "id" => vre['id']
       async true
     end
 
     csinstaller_admin_api "update network service provider" do
       command "updateNetworkServiceProvider"
-      params "state" => "Enable", "id" => nsp['id']
+      params "state" => "Enabled", "id" => nsp['id']
       async true
     end
 
