@@ -8,7 +8,6 @@ attribute :dns2
 attribute :internal_dns
 attribute :security_group_enabled
 attribute :guest_cidr_address
-attribute :admin_api_endpoint, :default => "http://localhost:8096"
 
 def initialize(*args)
   super

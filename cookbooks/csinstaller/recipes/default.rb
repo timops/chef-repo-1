@@ -13,4 +13,10 @@
 
 # print response
 
+
+# csinfo = Chef::DataBag.new
+# csinfo.name("csinfo")
+# csinfo.save
+
+
 include_recipe "csinstaller::setup_zone"

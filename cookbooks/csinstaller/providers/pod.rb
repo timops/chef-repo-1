@@ -1,10 +1,13 @@
 include Opscode::Cloudstack::Admin
 
 action :setup do
-    response = send_request(new_resource.admin_api_endpoint, 
+
+    zone_id = get_zone_id(node["zone"]["name"])
+
+    response = send_request(
     {
-        "command" => "createZone",
-        "zoneid" => new_resource.zone_id, 
+        "command" => "createPod",
+        "zoneid" => zone_id,
         "name" => new_resource.name,
         "gateway" => new_resource.gateway,
         "netmask" => new_resource.netmask,
@@ -12,12 +15,31 @@ action :setup do
         "endIp" => new_resource.end_ip
     })
 
-    #Dirrrrrty - find a elegant solution
-  for i in 0..len(node['zone']['pods'])
-      if node['zone']['pods'][i]['name'] == new_resource.name
-          node.set['zone']['pods'][i]['id'] = response['pod']['id']
-          node.save unless Chef::Config[:solo]
-          return
+  Chef::Log.info("clusters: #{new_resource.clusters}")
+  new_resource.clusters.each do |cluster|
+    csinstaller_cluster cluster['vcenter_cluster'] do
+      zone_id zone_id
+      hypervisor cluster['hypervisor']
+      pod_id response["pod"]["id"]
+      username cluster['username']
+      password cluster['password']
+      vcenter_host cluster['vcenter_host']
+      vcenter_datacenter cluster['vcenter_datacenter']
+      vcenter_cluster cluster['vcenter_cluster']
+    end
+
+    if cluster['primary_storages']
+      cluster['primary_storages'].each do |pri_storage|
+        csinstaller_admin_api "Add Primary Storage" do
+          command "createStoragePool"
+          params "name" => pri_storage['name'], "zoneid" => zone_id, "podid" => pod_id, "clusterid" => response["cluster"].first["id"],
+                  "url" => "nfs://#{pri_storage["nfs_server"]}/#{pri_storage["path"]}"
+        end
       end
+
+
+    end
+
+
   end
 end

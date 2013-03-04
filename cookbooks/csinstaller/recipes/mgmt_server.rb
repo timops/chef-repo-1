@@ -22,11 +22,6 @@ end
 
 # Download the cloudstack package from HTTP/FTP
 
-#Untar the tar gz
-
-# ./install.sh -m
-#  wget http://192.168.100.192/CloudStack-3.0.6-0.4203-rhel6.2.tar.gz
-
 script "install_mgmt_server" do
   interpreter "bash"
   user "root"
@@ -39,16 +34,12 @@ script "install_mgmt_server" do
   ./install.sh -m
   EOH
 end
-#  ./install.sh -d
+
 %w{rpcbind nfs-utils nfs-utils-lib
   }.each do |package_name|
     yum_package package_name do
     end
   end
-
-yum_package "nfs" do
-  arch "x86_64"
-end
 
 [
   "rpcbind", "nfs"
@@ -59,38 +50,38 @@ end
 end
 
 execute "cloud-setup-databases" do
-  command "cloud-setup-databases cloud:fr3sca@localhost --deploy-as=root:fr3sca"
+  command "cloud-setup-databases cloud:#{node['mysql']['server_root_password']}@localhost --deploy-as=root:#{node['mysql']['server_root_password']}"
 end
 
 execute 'cloud-setup-management' do
   command "cloud-setup-management"
 end
-# start, initialize nfs, rpcbind
 
+directory '/mnt/secondary' do
+  owner "root"
+  group "root"
+end
 
-# install the db server
-#./install.sh -d
+mount '/mnt/secondary' do
+  fstype 'nfs'
+  device "#{node['zone']['sec_storages'].first['nfs_server']}:#{node['zone']['sec_storages'].first['path']}"
+  action :mount
+end
 
-
-# Configure DB server
-#innodb_rollback_on_timeout=1
-# innodb_lock_wait_timeout=600
-# max_connections=350
-# log-bin=mysql-bin
-# binlog-format = 'ROW'
-
-#restart mysql
-
-#set mysql password
-
-#cloud setup database
-
-#cloud setup management
-
+script "install system VM template" do
+  interpreter "bash"
+  user "root"
+  code "<<-EOH
+      /usr/lib64/cloud/agent/scripts/storage/secondary/cloud-install-sys-tmplt -m\
+      /mnt/secondary -u http://download.cloud.com/templates/acton/acton-systemvm-02062012.ova\
+      -h vmware
+  EOH"
+end
 #sleep, enable port 8096
 service 'cloud-management' do
   action [:stop]
 end
+
 script "enable_mgmt_port" do
   interpreter "bash"
   user "root"
@@ -98,6 +89,17 @@ script "enable_mgmt_port" do
   code <<-EOH
   mysql -ucloud -pfr3sca -Dcloud  -e "update configuration set value=8096 where name='integration.api.port'"
   EOH
+end
+
+if node['zone']['local_storage_enabled']
+  script "allow system vms to use local storage" do
+    interpreter "bash"
+    user "root"
+    cwd "/tmp"
+    code <<-EOH
+    mysql -ucloud -pfr3sca -Dcloud  -e "update configuration set value=true where name='system.vm.use.local.storage'"
+    EOH
+  end
 end
 
 service 'cloud-management' do

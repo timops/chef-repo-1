@@ -2,10 +2,11 @@ include Opscode::Cloudstack::Admin
 
 action :setup do
 
-  response = send_async_request(new_resource.admin_api_endpoint,
+  zone_id = get_zone_id(node["zone"]["name"])
+  response = send_async_request(
   {
     "command" => "createPhysicalNetwork",
-    "zoneid" => new_resource.zone_id,
+    "zoneid" => zone_id,
     "name" => new_resource.name
     })
 
@@ -25,7 +26,7 @@ action :setup do
   end
 
   ["VirtualRouter", "VpcVirtualRouter" ].each do |nsp_type|
-    response = send_request(new_resource.admin_api_endpoint,
+    response = send_request(
       {
         "command" => "listNetworkServiceProviders",
         "name" => nsp_type,
@@ -33,7 +34,7 @@ action :setup do
     })
 
     nsp = response['networkserviceprovider'][0]
-    response = send_request(new_resource.admin_api_endpoint,
+    response = send_request(
     {
       "command" => "listVirtualRouterElements",
       "nspid" => nsp['id']

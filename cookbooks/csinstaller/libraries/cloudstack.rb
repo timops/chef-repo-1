@@ -13,7 +13,13 @@ module Opscode
     ASYNC_POLL_INTERVAL = 5.0
     ASYNC_TIMEOUT = 600
     module Admin
-      def send_request(admin_api_url, params)
+
+      def get_zone_id(zone_name)
+        zones = send_request({"command" => "listZones"})["zone"]
+        return zones.find { |z| z["name"] == zone_name }["id"]
+      end
+
+      def send_request(params, admin_api_url="http://localhost:8096")
         params['response'] = 'json'
         params_arr = []
         params.sort.each { |elem|
@@ -40,8 +46,8 @@ module Opscode
         json = JSON.parse(response.body)
         json[params['command'].downcase + 'response']
       end
-    def send_async_request(admin_api_url, params)
-          json = send_request(admin_api_url, params)
+    def send_async_request(params, admin_api_url="http://localhost:8096")
+          json = send_request(params,admin_api_url)
 
           params = {
               'command' => 'queryAsyncJobResult',
@@ -49,7 +55,7 @@ module Opscode
           }
           max_tries = (ASYNC_TIMEOUT / ASYNC_POLL_INTERVAL).round
           max_tries.times do
-            json = send_request(admin_api_url, params)
+            json = send_request(params, admin_api_url)
             status = json['jobstatus']
             print "."
             if status == 1 then

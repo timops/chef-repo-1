@@ -7,7 +7,6 @@ attribute :vcenter_datacenter, :kind_of => String
 attribute :vcenter_cluster, :kind_of => String
 attribute :username, :kind_of => String
 attribute :password, :kind_of => String
-attribute :admin_api_endpoint, :default => "http://localhost:8096"
 
 def initialize(*args)
     super

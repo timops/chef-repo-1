@@ -1,6 +1,6 @@
 include Opscode::Cloudstack::Admin
 action :setup do
-    response = send_request(new_resource.admin_api_endpoint,
+    response = send_request(
     {
         "command" => "createZone",
         "name" => new_resource.name,
@@ -11,11 +11,10 @@ action :setup do
         "internaldns1" => new_resource.internal_dns,
         "securitygroupenabled" => new_resource.security_group_enabled,
         "guestcidraddress" => new_resource.guest_cidr_address
-    }) 
-    
-    node.set['zone']['id'] = response['zone']['id']
-    node.save unless Chef::Config[:solo]
+    })
 end
 
 action :enable do
+  zone_id = get_zone_id(new_resource.name)
+  send_request({"command" =>"updateZone", "id" => zone_id, "allocationstate" => "Enabled" })
 end

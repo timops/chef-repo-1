@@ -4,7 +4,7 @@ default['zone']['local_storage_enabled'] = true
 default['zone']['dns1'] = '8.8.8.8'
 default['zone']['dns2'] = '4.4.4.4'
 default['zone']['internal_dns'] = '192.168.100.1'
-default['zone']['local_storage_enabled'] = false
+default['zone']['local_storage_enabled'] = true
 default['zone']['security_group_enabled'] = false
 default['zone']['guest_cidr_address'] = "10.1.1.0/16"
 
