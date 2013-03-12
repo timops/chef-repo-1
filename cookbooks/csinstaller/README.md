@@ -23,11 +23,13 @@ Attributes
 
 See the `attributes/server.rb` for the additional information.
 
+Zones
+
 * `node['cloudstack_version']` - CloudPlatform/CloudStack version to be installed
 * `node['download_url']` - Locally accessible HTTP URL
 * `node['zone']` - Information about the Cloudstack Zone to be setup
 
-Attributes include-
+Attributes include:
 
   * `name`
   * `network_type`
@@ -40,13 +42,15 @@ Attributes include-
 
 * `node['zone']['network]` - Associated Network
 
-Attributes include-
+Attributes include:
 
 * `name`
 
+Pods
+
 * `node['zone']['pods']` - Each Zone contains several Pods - usually a rack of hardware
 
-Attributes include-
+Attributes include:
 
   * `name`
   * `gateway`
@@ -55,9 +59,11 @@ Attributes include-
   * `end_ip`
   * `clusters`
 
+Clusters
+
 * `node['zone']['pods']['clusters]` - A Pod can contain several Clusters. A cluster consists of one or more hypervisor hosts and primary storage
 
-Attributes include (Current support restricted to VMWare) -
+Attributes include (Current support restricted to VMWare):
 
   * `hypervisor`
   * `username`
@@ -67,17 +73,21 @@ Attributes include (Current support restricted to VMWare) -
   * `vcenter_cluster`
   * `primary_storages`
 
+Primarty Storage
+
 * `node['zone']['pods']['clusters']['primary_storages']` - Associated with a cluster, stores disk volumes of all VMs
 
-Attributes include
+Attributes include:
 
   * `name`
   * `nfs_server`
   * `path`
 
+Public IP Range
+
 * `node['zone']['public_ip_range']` - Public IP Range so that the VMs are accessible in the client's network over NAT/Firewall
 
-Attrbutes include
+Attrbutes include:
 
   * `vlan`
   * `start_ip`
@@ -85,9 +95,11 @@ Attrbutes include
   * `gateway`
   * `netmask`
 
+Secondary Storage
+
 * `node['zone']['sec_storages']` - Associated with a zone,stores Templates, ISOs and Volume snapshots
 
-Attributes include
+Attributes include:
 
   * `nfs_server`
   * `path`
