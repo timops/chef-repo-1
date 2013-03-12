@@ -2,9 +2,9 @@ include Opscode::Cloudstack::Admin
 
 action :setup do
 
-    zone_id = get_zone_id(node["zone"]["name"])
+  zone_id = get_zone_id(node["zone"]["name"])
 
-    response = send_request(
+  response = send_request(
     {
         "command" => "createPod",
         "zoneid" => zone_id,
@@ -15,31 +15,31 @@ action :setup do
         "endIp" => new_resource.end_ip
     })
 
-  Chef::Log.info("clusters: #{new_resource.clusters}")
   new_resource.clusters.each do |cluster|
-    csinstaller_cluster cluster['vcenter_cluster'] do
-      zone_id zone_id
-      hypervisor cluster['hypervisor']
-      pod_id response["pod"]["id"]
-      username cluster['username']
-      password cluster['password']
-      vcenter_host cluster['vcenter_host']
-      vcenter_datacenter cluster['vcenter_datacenter']
-      vcenter_cluster cluster['vcenter_cluster']
-    end
+    podid = response["pod"]["id"]
+    response = send_request(
+      {
+        "zoneid" => zone_id,
+        "command" => "addCluster",
+        "clustertype" => "ExternalManaged",
+        "podId" => podid,
+        "username" => cluster['username'],
+        "password" => cluster['password'],
+        "url" => "http://#{cluster['vcenter_host']}/#{cluster['vcenter_datacenter']}/#{cluster['vcenter_cluster']}",
+        "clustername" => "http://#{cluster['vcenter_host']}/#{cluster['vcenter_datacenter']}/#{cluster['vcenter_cluster']}",
+        "hypervisor" => cluster['hypervisor']
+      })
 
+    Chef::Log.info("Primary storage: #{cluster}")
     if cluster['primary_storages']
       cluster['primary_storages'].each do |pri_storage|
+        clusterid = response['cluster'].first["id"]
         csinstaller_admin_api "Add Primary Storage" do
           command "createStoragePool"
-          params "name" => pri_storage['name'], "zoneid" => zone_id, "podid" => pod_id, "clusterid" => response["cluster"].first["id"],
+          params "name" => pri_storage['name'], "zoneid" => zone_id, "podid" => podid, "clusterid" => clusterid,
                   "url" => "nfs://#{pri_storage["nfs_server"]}/#{pri_storage["path"]}"
         end
       end
-
-
     end
-
-
   end
 end

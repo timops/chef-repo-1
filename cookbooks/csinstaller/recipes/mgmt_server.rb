@@ -8,18 +8,6 @@
 #
 
 
-# Turn off SELinux
-script "disable_selinux" do
-  interpreter "bash"
-  user "root"
-  cwd "/tmp"
-  code <<-EOH
-     setenforce 0
-     sed -i s/SELINUX=enforcing/SELINUX=disabled/g /etc/selinux/config
-  EOH
-  only_if {File.exists?("/etc/selinux/config")}
-end
-
 # Download the cloudstack package from HTTP/FTP
 
 script "install_mgmt_server" do
@@ -27,10 +15,10 @@ script "install_mgmt_server" do
   user "root"
   cwd "/tmp"
   code <<-EOH
-  wget -c -nc http://172.31.6.97/CloudStack-3.0.6-0.4203-rhel6.2.tar.gz
+  wget -c -nc #{node["download_url"]}/CloudStack-#{node["cloudstack_version"]}.tar.gz
 
-  tar -zxf CloudStack-3.0.6-0.4203-rhel6.2.tar.gz
-  cd CloudStack-3.0.6-0.4203-rhel6.2
+  tar -zxf CloudStack-#{node["cloudstack_version"]}.tar.gz
+  cd CloudStack-#{node["cloudstack_version"]}
   ./install.sh -m
   EOH
 end
@@ -60,6 +48,7 @@ end
 directory '/mnt/secondary' do
   owner "root"
   group "root"
+  not_if do FileTest.directory? "/mnt/secondary" end
 end
 
 mount '/mnt/secondary' do
@@ -77,6 +66,12 @@ script "install system VM template" do
       -h vmware
   EOH"
 end
+
+ruby_block "sleep" do
+  block do
+    sleep 120
+  end
+end
 #sleep, enable port 8096
 service 'cloud-management' do
   action [:stop]
@@ -91,20 +86,27 @@ script "enable_mgmt_port" do
   EOH
 end
 
-if node['zone']['local_storage_enabled']
   script "allow system vms to use local storage" do
     interpreter "bash"
     user "root"
     cwd "/tmp"
     code <<-EOH
-    mysql -ucloud -pfr3sca -Dcloud  -e "update configuration set value=true where name='system.vm.use.local.storage'"
+    mysql -ucloud -pfr3sca -Dcloud  -e "update configuration set value='true' where name='system.vm.use.local.storage'"
     EOH
   end
+
+mount '/mnt/secondary' do
+  fstype 'nfs'
+  device "#{node['zone']['sec_storages'].first['nfs_server']}:#{node['zone']['sec_storages'].first['path']}"
+  action :umount
 end
 
 service 'cloud-management' do
   action [:start]
 end
 
-
-
+ruby_block "sleep" do
+  block do
+    sleep 120
+  end
+end

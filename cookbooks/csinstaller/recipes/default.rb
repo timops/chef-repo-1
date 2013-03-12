@@ -19,4 +19,5 @@
 # csinfo.save
 
 
-include_recipe "csinstaller::setup_zone"
+include_recipe "csinstaller::mgmt_server"
+#include_recipe "csinstaller::setup_zone"
