@@ -28,62 +28,69 @@ See the `attributes/server.rb` for the additional information.
 * `node['zone']` - Information about the Cloudstack Zone to be setup
 
 Attributes include-
-    - name
-    - network_type
-    - local_storage_enabled
-    - dns1
-    - dns2
-    - internal_dns
-    - security_group_enabled
-    - guest_cidr_address
+
+  * `name`
+  * `network_type`
+  * `local_storage_enabled`
+  * `dns1`
+  * `dns2`
+  * `internal_dns`
+  * `security_group_enabled`
+  * `guest_cidr_address`
 
 * `node['zone']['network]` - Associated Network
 
 Attributes include-
-    - name
+
+* `name`
 
 * `node['zone']['pods']` - Each Zone contains several Pods - usually a rack of hardware
 
 Attributes include-
-    - name
-    - gateway
-    - netmask
-    - start_ip
-    - end_ip
-    - clusters
+
+  * `name`
+  * `gateway`
+  * `netmask`
+  * `start_ip`
+  * `end_ip`
+  * `clusters`
 
 * `node['zone']['pods']['clusters]` - A Pod can contain several Clusters. A cluster consists of one or more hypervisor hosts and primary storage
 
 Attributes include (Current support restricted to VMWare) -
-    - hypervisor
-    - username
-    - password
-    - vcenter_host
-    - vcenter_datacenter
-    - vcenter_cluster
-    - primary_storages
+
+  * `hypervisor`
+  * `username`
+  * `password`
+  * `vcenter_host`
+  * `vcenter_datacenter`
+  * `vcenter_cluster`
+  * `primary_storages`
 
 * `node['zone']['pods']['clusters']['primary_storages']` - Associated with a cluster, stores disk volumes of all VMs
 
 Attributes include
-    - name
-    - nfs_server
-    - path
+
+  * `name`
+  * `nfs_server`
+  * `path`
 
 * `node['zone']['public_ip_range']` - Public IP Range so that the VMs are accessible in the client's network over NAT/Firewall
 
 Attrbutes include
-    - vlan
-    - start_ip
-    - end_ip
-    - gateway
-    - netmask
+
+  * `vlan`
+  * `start_ip`
+  * `end_ip`
+  * `gateway`
+  * `netmask`
 
 * `node['zone']['sec_storages']` - Associated with a zone,stores Templates, ISOs and Volume snapshots
 
 Attributes include
-    - nfs_server
-    - path
+
+  * `nfs_server`
+  * `path`
 
 Usage
 =====
