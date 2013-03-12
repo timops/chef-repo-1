@@ -1,3 +1,21 @@
+#
+# Author:: Chirag Jog <chirag@clogeny.com>
+# Copyright:: Copyright (c) 2013, Opscode, Inc.
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
 begin
   require 'rubygems'
   require 'base64'
@@ -6,7 +24,7 @@ begin
   require 'cgi'
   require 'net/http'
   require 'json'
-  end
+end
 
 module Opscode
   module Cloudstack
@@ -26,21 +44,21 @@ module Opscode
           params_arr << elem[0].to_s + '=' + elem[1].to_s
         }
         data = params_arr.join('&')
-        Chef::Log.info("Raw HTTP Request: #{data}")
+        Chef::Log.debug("Raw HTTP Request: #{data}")
         #encoded_data = URI.encode(data.downcase).gsub('+', '%2B').gsub(',', '%2c').gsub(' ','%20').gsub('/','%2F').gsub(':',"%3A")
         #Chef::Log.info("Encoded HTTP Request: #{encoded_data}")
         url = "#{admin_api_url}?#{data}"
         uri = URI.parse(url)
         http = Net::HTTP.new(uri.host, uri.port)
         request = Net::HTTP::Get.new(uri.request_uri)
-        Chef::Log.info("HTTP Request: #{uri.request_uri}")
+        Chef::Log.debug("HTTP Request: #{uri.request_uri}")
         response = http.request(request)
-        Chef::Log.info("HTTP Response: #{response.body}")
+        Chef::Log.debug("HTTP Response: #{response.body}")
 
         if !response.is_a?(Net::HTTPOK) then
-          puts "Error #{response.code}: #{response.message}"
-          puts JSON.pretty_generate(JSON.parse(response.body))
-          puts "URL: #{url}"
+          Chef::Log.info("Error #{response.code}: #{response.message}")
+          Chef::Log.info(JSON.pretty_generate(JSON.parse(response.body)))
+          Chef::Log.info("URL: #{url}")
           exit 1
         end
         json = JSON.parse(response.body)
@@ -62,14 +80,14 @@ module Opscode
               return json['jobresult']
             elsif status == 2 then
               print "\n"
-              puts "Request failed (#{json['jobresultcode']}): #{json['jobresult']}"
+              Chef::Log.info("Request failed (#{json['jobresultcode']}): #{json['jobresult']}")
               exit 1
             end
             STDOUT.flush
             sleep ASYNC_POLL_INTERVAL
           end
           print "\n"
-          puts "Error: Asynchronous request timed out"
+          Chef::Log.info("Error: Asynchronous request timed out")
           exit 1
         end
       end
