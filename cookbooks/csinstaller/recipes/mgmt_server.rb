@@ -26,9 +26,9 @@ script "install_mgmt_server" do
   user "root"
   cwd "/tmp"
   code <<-EOH
-  wget -c -nc #{node["download_url"]}/CloudStack-#{node["cloudstack_version"]}.tar.gz
+  wget -c -nc #{node["download_url"]}/CloudStack-#{node["cloudstack_trial"]}.tar.gz
 
-  tar -zxf CloudStack-#{node["cloudstack_version"]}.tar.gz
+  tar -zxf CloudStack-#{node["cloudstack_trial"]}.tar.gz
   cd CloudStack-#{node["cloudstack_version"]}
   ./install.sh -m
   EOH

@@ -34,7 +34,7 @@ csinstaller_network node['zone']['network']['name'] do
   traffic_type ["Guest", "Management", "Public"]
 end
 
- node['zone']['pods'].each do |pod|
+node['zone']['pods'].each do |pod|
      csinstaller_pod pod['name'] do
          zone_name node['zone']['name']
          gateway pod['gateway']

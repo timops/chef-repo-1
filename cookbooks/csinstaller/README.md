@@ -21,7 +21,7 @@ Tested on:
 Attributes
 ==========
 
-See the `attributes/server.rb` for the additional information.
+See the `attributes/default.rb` for additional information.
 
 Zones
 

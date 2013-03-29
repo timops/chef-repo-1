@@ -15,8 +15,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-default['cloudstack_version'] = "3.0.6-0.4320-rhel6.2"
-default['download_url'] = "http://localhost"
+default['cloudstack_trial'] = "3.0.6.1-trial-rhel6.2"
+default['cloudstack_version'] = "3.0.6-1-rhel6.2"
+default['download_url'] = "http://downloadns.citrix.com.edgesuite.net/akdlm/4226"
 default['zone']['name'] = "Opscode-Zone-001"
 default['zone']['network_type'] = 'Advanced'
 default['zone']['local_storage_enabled'] = "true"
@@ -70,8 +71,8 @@ default['zone']['public_ip_ranges'] = [{
 
 default['zone']['sec_storages'] = [
   {
-    "nfs_server" => "192.168.100.229",
-    "path" => "/media/usbdrive/nfs3"
+    "nfs_server" => "10.73.33.177",
+    "path" => "/export"
   }
 
 ]
